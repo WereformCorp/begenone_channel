@@ -47,6 +47,12 @@
 const axios = require("axios");
 const catchAsync = require("../utils/catchAsync");
 
+const isProd = process.env.NODE_ENV === "production";
+
+const authUrlPath = isProd
+  ? process.env.PRODUCTION_APP_AUTH_API_URL_PRODUCTION
+  : process.env.LOCALHOST_AUTH_URL;
+
 const protect = catchAsync(async (req, res, next) => {
   try {
     // 1) Get the token (similar to your middleware)
@@ -66,7 +72,7 @@ const protect = catchAsync(async (req, res, next) => {
     // 2) Make the POST request to the authentication middleware in another microservice
     if (token) {
       const response = await axios.post(
-        `${process.env.LOCALHOST_AUTH_URL}/api/v1/authentication/route-auth/authenticate`,
+        `${authUrlPath}/api/v1/authentication/route-auth/authenticate`,
         {}, // You can send the token in the body if needed, or handle this in headers
         {
           headers: {
